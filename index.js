@@ -1,5 +1,4 @@
 /*
-
 @name ViciAuthSDK
 @version 1.0
 @desc Client Authentification Module to Communicate with ViciAuthAPI.
@@ -10,7 +9,6 @@ ViciQloud UG (haftungsbeschränkt)
 Robert-Bosch-Strasse 49
 69190 Walldorf
 adrian.barwicki@viciqloud.com
-
 */
 
 var request = require("request");
@@ -20,28 +18,41 @@ var API_URL, APP_KEY, API_KEY;
 
 module.exports = initSDK;
 	
-	
 function initSDK(ConfigKeys) {
   if(!ConfigKeys.appKey||!ConfigKeys.apiKey){
     throw "[ViciAuthSDK] AppKey or ApiKey not specified";
   }
-	
+    
   API_URL = "http://viciauth.com"
-  APP_KEY = ConfigKeys.appKey;
-  API_KEY = ConfigKeys.apiKey;
   
+  APP_KEY = ConfigKeys ? ConfigKeys.appKey || null;
+  API_KEY = ConfigKeys ? ConfigKeys.apiKey || null;
+
+  if(!APP_KEY || !API_KEY){
+    throw "[ViciQloudSDK] Missing APP KEY or API KEY"
+  }
   
-  return {
-    destroyToken : destroyToken,
-    checkToken : checkToken,
-    connectToFacebook : connectToFacebook,
-    localSignup : localSignup,
-    localLogin : localLogin,
-  };
+  return (new ViciAuthSDK(API_URL,APP_KEY,API_KEY));
 }
 
+var ViciAuthSDK = (function(){
 
-
+var ViciAuthSDK = function(apiUrl,apiKey,appKey){
+    
+// private attrs
+var API_URL = apiUrl;
+var API_KEY = apiKey;
+var APP_KEY = appKey;
+ 
+    
+// public methods    
+this.destroyToken = destroyToken;
+this.checkToken = checkToken;
+this.connectToFacebook = connectToFacebook;
+this.localSignup = localSignup;
+this.localLogin = localLogin;
+    
+    
 function getRequestHeader(token){
   return {
     'User-Agent': 'ViciAuth SDK 1.0',
@@ -111,7 +122,7 @@ request.post(options,(err, response, body) => {
     return callback({status:502,err:err});
   }
   
-      if(body){
+   if(body){
     try{
       body = JSON.parse(body);
     }catch(err){
@@ -216,3 +227,9 @@ function destroyToken(token,callback){
 	console.error("Destroy Token, missing function implemention, quick fix!");
 	callback();
 }
+}; 
+    
+  return ViciAuthSDK;  
+
+}());
+
