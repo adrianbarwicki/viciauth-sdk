@@ -1,39 +1,44 @@
 /*
-@name ViciAuthSDK
-@version 1.0
-@desc Client Authentification Module to Communicate with ViciAuthAPI.
-@author Adrian Barwicki
+    @name ViciAuthSDK
+    @version 1.0
+    @desc Client Authentification Module to Communicate with ViciAuthAPI.
+    @author Adrian Barwicki
 
-@copyright
-ViciQloud UG (haftungsbeschränkt)
-Robert-Bosch-Strasse 49
-69190 Walldorf
-adrian.barwicki@viciqloud.com
+    @copyright
+    ViciQloud UG (haftungsbeschränkt)
+    Robert-Bosch-Strasse 49
+    69190 Walldorf
+    adrian.barwicki@viciqloud.com
 */
 
 var request = require("request");
-
+var UserModel = require=("./models/user");
+var FbConfigModel= require=("./models/fbConfig");
 var VERSION = "1.0";
-var API_URL, APP_KEY, API_KEY;
 
 module.exports = initSDK;
 	
-function initSDK(ConfigKeys) {
+function initSDK(ConfigKeys,expressApp,passport) {
   if(!ConfigKeys.appKey||!ConfigKeys.apiKey){
     throw "[ViciAuthSDK] AppKey or ApiKey not specified";
   }
     
-  API_URL = "http://viciauth.com"
+  var API_URL = "http://viciauth.com";
+  var APP_KEY = ConfigKeys ? ConfigKeys.appKey : null;
+  var API_KEY = ConfigKeys ? ConfigKeys.apiKey : null;
   
-  APP_KEY = ConfigKeys ? ConfigKeys.appKey || null;
-  API_KEY = ConfigKeys ? ConfigKeys.apiKey || null;
-
-  if(!APP_KEY || !API_KEY){
+  if( !APP_KEY || !API_KEY ){
     throw "[ViciQloudSDK] Missing APP KEY or API KEY"
   }
   
-  return (new ViciAuthSDK(API_URL,APP_KEY,API_KEY));
+  var ViciAuth = (new ViciAuthSDK(API_URL,APP_KEY,API_KEY));    
+  if(app&&passport){
+      ViciAuth.configureRoutes(app,passport);  
+  }
+
+  return ViciAuth;
 }
+
 
 var ViciAuthSDK = (function(){
 
@@ -43,16 +48,31 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
 var API_URL = apiUrl;
 var API_KEY = apiKey;
 var APP_KEY = appKey;
- 
-    
+
+
+// extends  
+this.Models={
+  User : UserModel
+};
+  
+this.FbConfig = new fbConfig();
+this.configureRoutes = configureRoutes;
+
+
 // public methods    
 this.destroyToken = destroyToken;
 this.checkToken = checkToken;
 this.connectToFacebook = connectToFacebook;
 this.localSignup = localSignup;
 this.localLogin = localLogin;
+ 
     
-    
+  
+
+function configureRoutes(app,passport){
+  require("./routes")(app,password,fbConfig);  
+}
+
 function getRequestHeader(token){
   return {
     'User-Agent': 'ViciAuth SDK 1.0',
