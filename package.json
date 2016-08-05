@@ -20,5 +20,8 @@
   },
   "dependencies": {
     "request": "~2.74.0"
+  },
+  "devDependencies": {
+    "nodelint": "^0.6.2"
   }
 }

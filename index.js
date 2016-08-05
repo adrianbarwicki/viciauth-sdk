@@ -13,7 +13,7 @@
 
 var request = require("request");
 var UserModel = require=("./models/user");
-var FbConfigModel= require=("./models/fbConfig");
+var FbConfigModel=require("./models/fbConfig");
 var VERSION = "1.0";
 
 module.exports = initSDK;
@@ -55,7 +55,7 @@ this.Models={
   User : UserModel
 };
   
-this.FbConfig = new fbConfig();
+this.FbConfig = new FbConfigModel();
 this.configureRoutes = configureRoutes;
 
 
@@ -70,7 +70,7 @@ this.localLogin = localLogin;
   
 
 function configureRoutes(app,passport){
-  require("./routes")(app,password,fbConfig);  
+  require("./routes")(app,password,FbConfig);  
 }
 
 function getRequestHeader(token){

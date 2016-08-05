@@ -18,7 +18,7 @@ exports.fbConfig = {
 
 
 
-
+module.exports = initRoutes;
 
 function initRoutes(app,passport,fbConfig) {
 
