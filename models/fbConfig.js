@@ -1,4 +1,9 @@
- var FbConfig = (function(){
+/*
+@todo
+ 1. Custom Profile Modules
+ 2. Check Method
+*/
+var FbConfig = (function(){
         var fbConfig = function(clientID,clientSecret,callbackURL,passReqToCallback,profileFields){
   
             var defaultProfileFields = ['id', 'name', 'displayName', 'gender', 'profileUrl', 'email'];

@@ -1,26 +1,16 @@
-
-
-
 /*
-exports.viciauthConfig = {
-	appKey: "YLLURCac8ZRo1ENOboq2WeoPsJNI036Vd0W17qo",
-	apiKey: "MQgqXJvApiA2WC2BFz8OMQgqXJvApiA2WC2BFz8O",
-};
-
-exports.fbConfig = {
-			clientID: "714270265376526",
-			clientSecret: "bcf833aa4ed408950b1c83172000c9f5",
-			callbackURL: "http://localhost:3020/viciauth/facebook/callback", //http://sirbz.com
-			passReqToCallback: true,
-			profileFields: ['id', 'name', 'displayName', 'gender', 'profileUrl', 'email']
-};
+    Additional routes provided to the express app for handling signup, login and facebook authentification
+    @param1 app: Express App
+    @param2 fbConfig : fbConfig Object, check models/fbConfig.js for reference
+    @todo: 
+        1. custom express-session secret.
+        2. Implementation for the login and signup routes.
+        3. API for asynchrouns authentification
 */
-
-
 
 module.exports = initRoutes;
 
-function initRoutes(app,passport,fbConfig) {
+function initRoutes(app,fbConfig,connectToFacebook) {
 
     var async = require("async");
     var FacebookStrategy = require('passport-facebook').Strategy;

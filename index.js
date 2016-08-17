@@ -12,9 +12,14 @@
 */
 
 var request = require("request");
-var UserModel = require=("./models/user");
-var FbConfigModel=require("./models/fbConfig");
-var VERSION = "1.0";
+var UserModel = require("./models/user");
+var FbConfigModel = require("./models/fbConfig");
+var VERSION = "1.0.0";
+
+
+
+
+
 
 module.exports = initSDK;
 	
@@ -60,17 +65,18 @@ this.configureRoutes = configureRoutes;
 
 
 // public methods    
-this.destroyToken = destroyToken;
+this.destroyToken = require("libs/destroyToken");
+    
 this.checkToken = checkToken;
 this.connectToFacebook = connectToFacebook;
-this.localSignup = localSignup;
+this.localSignup = localSignup; 
 this.localLogin = localLogin;
  
     
   
 
 function configureRoutes(app,passport){
-  require("./routes")(app,password,FbConfig);  
+  require("./routes")(app,password,FbConfig,connectToFacebook);  
 }
 
 function getRequestHeader(token){
@@ -82,8 +88,11 @@ function getRequestHeader(token){
   };
 }
 
+    
 function checkToken(token,callback){
 
+
+    
 var options = {
   url: API_URL + "/auth/token",
   headers: getRequestHeader(token)
@@ -119,13 +128,14 @@ request.post(options,(err, response, body) => {
  
 });
 	
-}
+}    
+
 
 function connectToFacebook(token,refreshToken,Profile,callback){
   var options = {
-  url: API_URL + "/auth/networks/facebook",
-  headers: getRequestHeader(token)
-}
+      url: API_URL + "/auth/networks/facebook",
+      headers: getRequestHeader(token)
+  };
 
   
 var postBody  = { token : token, refreshToken : refreshToken, Profile : Profile };
@@ -243,10 +253,7 @@ request.post(options, (err, response, body) => {
 });
 }
 
-function destroyToken(token,callback){
-	console.error("Destroy Token, missing function implemention, quick fix!");
-	callback();
-}
+
 }; 
     
   return ViciAuthSDK;  
