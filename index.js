@@ -35,15 +35,16 @@ module.exports = initSDK;
 
 function initSDK(ConfigKeys,expressApp,passport) {
 
+  ConfigKeys = ConfigKeys || {};
+    
   if(!ConfigKeys.appKey||!ConfigKeys.apiKey){
     throw "[ViciAuthSDK] AppKey or ApiKey not specified";
   }
 
     
-  var APP_URL = OPTS;    
-  var APP_KEY = ConfigKeys ? ConfigKeys.appKey : null;
+  var API_URL = OPTS;    
   var API_KEY = ConfigKeys ? ConfigKeys.apiKey : null;
-  
+  var APP_KEY = ConfigKeys ? ConfigKeys.appKey : null; 
   if( !APP_KEY || !API_KEY ){
     throw "[ERROR] [ViciQloudSDK] Missing APP KEY or API KEY!"
   }
