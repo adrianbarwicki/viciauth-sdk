@@ -87,6 +87,7 @@ var UserModel = require("../models/user.js");
          ViciAuth.FbConfig.setClientID("clientid");
          ViciAuth.FbConfig.setClientSecret("clientsecret");
          ViciAuth.FbConfig.setCallbackURL("callbackurl");
+            console.log(ViciAuth.FbConfig);
          var app = require("express")();
          ViciAuth.configureRoutes(app);
          console.log("[Test OK]");

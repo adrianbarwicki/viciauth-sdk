@@ -62,16 +62,11 @@ function initRoutes(app,fbConfig,connectToFacebook) {
     }));    
    
     
-function fbAuthHandler(token,refreshToken,profile,done){
+    
+// pass req to handler is set true as default.    
+function fbAuthHandler(req,token,refreshToken,profile,done){
 
-    
-            console.log("[ViciAuth] FB returns ");
-            console.log(typeof token);
-            console.log(typeof refreshToken);
-            console.log(typeof profile);
-            console.log(typeof done);
-    
-           
+
 			var User,Profile,Photos,alreadyExists = false;
 
 		    var Profile = new ViciAuthUserModel();
