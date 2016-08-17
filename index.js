@@ -124,8 +124,13 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
 
 
     ViciAuthSDK.prototype.call = function(uri, params, callback) {
+         console.log("[INFO] [ViciAuth] Calling uri %s",uri);
+        
          params = params || {};
-
+         if(!callback){
+             throw "[ERROR] call method must be provided with callback function!"
+         }
+        
          var requestOptions = OPTS;
          requestOptions.headers['x-auth-viciauth-app-key'] = APP_KEY;
          requestOptions.headers['x-auth-viciauth-api-key'] = APP_KEY;

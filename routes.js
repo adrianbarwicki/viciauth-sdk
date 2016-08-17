@@ -91,7 +91,7 @@ function fbAuthHandler(req,token,refreshToken,profile,done){
                  if(err){
                      return done(JSON.stringify(err));
                  }
-                 done(err,{ userId : rUser.userId, token : rUser.token });
+                 return done(err,{ userId : rUser.userId, token : rUser.token });
              });
         
 }    
