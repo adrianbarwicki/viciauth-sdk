@@ -27,7 +27,7 @@ function initRoutes(app,fbConfig,connectToFacebook) {
     
     //app.use(require('express-session')({ secret: 'blsdkafkmkablablajsdnasdjasd' }));
     app.use(passport.initialize());
-    app.use(passport.session());  
+    //app.use(passport.session());  
     
 	passport.serializeUser(function(User, done) {
 		return done(null, User);
@@ -68,7 +68,7 @@ function initRoutes(app,fbConfig,connectToFacebook) {
 
 function fbAuthHandler(token, refreshToken, profile, done){
             
-            console.log("[ViciAuth] FB returns profile:",profile);
+            console.log("[ViciAuth] FB returns profile:",token, refreshToken, profile);
     
 			var User,Profile,Photos,alreadyExists = false;
 
