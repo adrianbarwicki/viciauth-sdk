@@ -60,20 +60,21 @@ function initRoutes(app,fbConfig,connectToFacebook) {
             successRedirect: '/',
             failureRedirect: '/'
     }));    
+   
     
-}
+function fbAuthHandler(token,refreshToken,profile,done){
 
-
-
-
-function fbAuthHandler(token,profile,refreshToken, done){
-
-            console.log("[ViciAuth] FB returns profile:",token,profile);
+            console.log("[ViciAuth] FB returns profile:",profile);
     
 			var User,Profile,Photos,alreadyExists = false;
 
 		    var Profile = new ViciAuthUserModel();
              
+            if(typeof profile == "undefined"){
+                console.log("[WARNING] Profile undefined");
+                profile={};
+            }
+            
             if (profile.gender)
              Profile.addProp("gender",profile.gender);
             if (profile.displayName)
@@ -92,4 +93,12 @@ function fbAuthHandler(token,profile,refreshToken, done){
                  done(err,{ userId : rUser.userId, token : rUser.token });
              });
         
+}    
+    
+    
+    
 }
+
+
+
+
