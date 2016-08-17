@@ -164,5 +164,6 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
     
   return ViciAuthSDK;  
 
-}());
+}
 
+});
