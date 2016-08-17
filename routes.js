@@ -1,20 +1,29 @@
 /*
     Additional routes provided to the express app for handling signup, login and facebook authentification
-    @param1 app: Express App
-    @param2 fbConfig : fbConfig Object, check models/fbConfig.js for reference
+    @param app: Express App
+    @param fbConfig : fbConfig Object, check models/fbConfig.js for reference
     @todo: 
         1. custom express-session secret.
         2. Implementation for the login and signup routes.
         3. API for asynchrouns authentification
 */
 
+
+var async = require("async");
+var FacebookStrategy = require('passport-facebook').Strategy;
+var passport = require('passport');
+
+var ViciAuthUserModel = require("./models/user.js");
+
 module.exports = initRoutes;
 
 function initRoutes(app,fbConfig,connectToFacebook) {
-
-    var async = require("async");
-    var FacebookStrategy = require('passport-facebook').Strategy;
-    var passport = require('passport');
+    
+    console.log("[ViciAuthSDK] Setting authentification routes");
+    console.log("[ViciAuthSDK] /viciauth/login : Login");
+    console.log("[ViciAuthSDK] /viciauth/signup : Signup");
+    console.log("[ViciAuthSDK] /viciauth/reset-pw : Restart password");
+    console.log("[ViciAuthSDK] /viciauth/reset-pw : Changing password");
     
     app.use(require('express-session')({ secret: 'blsdkafkmkablablajsdnasdjasd' }));
     app.use(passport.initialize());
@@ -24,16 +33,16 @@ function initRoutes(app,fbConfig,connectToFacebook) {
 		return done(null, User);
 	});
 
-	
 	passport.deserializeUser(function(User, done) {
 		return done(null, User);
 	});
 
 	passport.use(new FacebookStrategy(fbConfig,(req, token, refreshToken, profile, done)=> {
 
-			var User, Profile, Photos,alreadyExists = false;
+			var User, Profile,Photos,alreadyExists = false;
 
-		    var Profile = new ViciAuth.Models.User();
+		    var Profile = new ViciAuthUserModel();
+             
             if (profile.gender)
              Profile.addProp("gender",profile.gender);
             if (profile.displayName)
@@ -44,7 +53,7 @@ function initRoutes(app,fbConfig,connectToFacebook) {
              Profile.setFbToken(token);
              Profile.setFbRefreshToken(refreshToken);
         
-             Profile.authFb((err,rUser)=>{
+             connectToFacebook(token, refreshToken,Profile,(err,rUser)=>{
                  if(err){
                      return done(JSON.stringify(err));
                  }
