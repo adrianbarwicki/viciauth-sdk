@@ -94,7 +94,7 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
  
 
     function configureRoutes(app){
-      require("./routes")(app,FbConfig,connectToFacebook);  
+      require("./routes")(app,this.FbConfig,this.connectToFacebook);  
     }
 
 

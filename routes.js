@@ -25,7 +25,7 @@ function initRoutes(app,fbConfig,connectToFacebook) {
     console.log("[ViciAuthSDK] /viciauth/reset-pw : Restart password");
     console.log("[ViciAuthSDK] /viciauth/reset-pw : Changing password");
     
-    app.use(require('express-session')({ secret: 'blsdkafkmkablablajsdnasdjasd' }));
+    //app.use(require('express-session')({ secret: 'blsdkafkmkablablajsdnasdjasd' }));
     app.use(passport.initialize());
     app.use(passport.session());  
     

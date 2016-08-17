@@ -79,6 +79,25 @@ var UserModel = require("../models/user.js");
 
 
 
+(function(testName){
+    console.log("[START]",testName);
+    try{
+         var ConfigKeys = { apiKey : "xxxxxxxxx", appKey : "xxxxxxxxx" };
+         var ViciAuth = new ViciAuthSDK(ConfigKeys);
+         ViciAuth.FbConfig.setClientID("clientid");
+         ViciAuth.FbConfig.setClientSecret("clientsecret");
+         ViciAuth.FbConfig.setCallbackURL("callbackurl");
+         var app = require("express")();
+         ViciAuth.configureRoutes(app);
+         console.log("[Test OK]");
+    } catch(err){
+        console.log("[Test failed]",err);
+    }
+}("Configure routes"));
+
+
+
+
 /*
 ConfigKeys.appKey : null;
   var API_KEY = ConfigKeys ? ConfigKeys.apiKey
