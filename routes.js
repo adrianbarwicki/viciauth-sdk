@@ -66,9 +66,9 @@ function initRoutes(app,fbConfig,connectToFacebook) {
 
 
 
-function fbAuthHandler(token, refreshToken, profile, done){
-            
-            console.log("[ViciAuth] FB returns profile:",token, refreshToken, profile);
+function fbAuthHandler(token,profile,refreshToken, done){
+
+            console.log("[ViciAuth] FB returns profile:",token,profile);
     
 			var User,Profile,Photos,alreadyExists = false;
 
