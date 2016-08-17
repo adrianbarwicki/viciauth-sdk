@@ -37,9 +37,40 @@ function initRoutes(app,fbConfig,connectToFacebook) {
 		return done(null, User);
 	});
 
-	passport.use(new FacebookStrategy(fbConfig,(token, refreshToken, profile, done)=>{
+	passport.use(new FacebookStrategy(fbConfig,fbAuthHandler));
+ 
+    // read ViciAuth Token and Serialize User into Request
+    app.use((req,res,next)=>{
+        next();
+    });
+
+    app.get('/viciauth/login',(req,res)=>{
+        res.send("Not implemented");
+    });
+
+    app.get('/viciauth/signup',(req,res)=>{
+        res.send("Not implemented");
+    });
+
+    app.get('/viciauth/facebook',passport.authenticate('facebook', {
+        scope: ['email']
+    }));
+
+    app.get('/viciauth/facebook/callback',passport.authenticate('facebook', {
+            successRedirect: '/',
+            failureRedirect: '/'
+    }));    
+    
+}
+
+
+
+
+function fbAuthHandler(token, refreshToken, profile, done){
             
-			var User, Profile,Photos,alreadyExists = false;
+            console.log("[ViciAuth] FB returns profile:",profile);
+    
+			var User,Profile,Photos,alreadyExists = false;
 
 		    var Profile = new ViciAuthUserModel();
              
@@ -61,28 +92,4 @@ function initRoutes(app,fbConfig,connectToFacebook) {
                  done(err,{ userId : rUser.userId, token : rUser.token });
              });
         
-		}));
- 
-        // read ViciAuth Token and Serialize User into Request
-        app.use((req,res,next)=>{
-            next();
-        });
-
-        app.get('/viciauth/login',(req,res)=>{
-            res.send("Not implemented");
-        });
-
-        app.get('/viciauth/signup',(req,res)=>{
-            res.send("Not implemented");
-        });
-
-        app.get('/viciauth/facebook',passport.authenticate('facebook', {
-            scope: ['email']
-        }));
-
-        app.get('/viciauth/facebook/callback',passport.authenticate('facebook', {
-                successRedirect: '/',
-                failureRedirect: '/'
-        }));    
-    
 }
