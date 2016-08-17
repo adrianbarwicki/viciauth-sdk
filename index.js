@@ -93,8 +93,8 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
     this.localLogin = localLogin;
  
 
-    function configureRoutes(app,passport){
-      require("./routes")(app,password,FbConfig,connectToFacebook);  
+    function configureRoutes(app){
+      require("./routes")(app,FbConfig,connectToFacebook);  
     }
 
 
