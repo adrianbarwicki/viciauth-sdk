@@ -25,9 +25,10 @@ var UserModel = require("../models/user.js");
 }("Test Call to Resource without Keys"));
 
 (function(testName){
-    console.log("Test",testName);
+    console.log("[START]",testName);
     try{
          var TestFbConfigModel = new  FbConfigModel();
+         TestFbConfigModel.setClientID("clientid");
          console.log("[Test OK]");
     } catch(err){
         console.log("[Test failed]",err);
@@ -36,7 +37,38 @@ var UserModel = require("../models/user.js");
 
 
 (function(testName){
-    console.log("Test",testName);
+    console.log("[START]",testName);
+    try{
+         var ConfigKeys = { apiKey : "xxxxxxxxx", appKey : "xxxxxxxxx" };
+         var ViciAuth = new ViciAuthSDK(ConfigKeys);
+         if( !ViciAuth.FbConfig ){
+             console.log("[Test failed]")
+         }else{
+              console.log("[Test OK");
+         }
+    } catch(err){
+        console.log("[Test failed]",err);
+    }
+}("Test ViciAuthSDK has property FbConfig"));
+
+
+(function(testName){
+    console.log("[START]",testName);
+    try{
+         var ConfigKeys = { apiKey : "xxxxxxxxx", appKey : "xxxxxxxxx" };
+         var ViciAuth = new ViciAuthSDK(ConfigKeys);
+         ViciAuth.FbConfig.setClientID("clientid");
+         ViciAuth.FbConfig.setClientSecret("clientsecret");
+         ViciAuth.FbConfig.setCallbackURL("callbackurl");
+         console.log("[Test OK]");
+    } catch(err){
+        console.log("[Test failed]",err);
+    }
+}("Test ViciAuthSDK FbConfig methods"));
+
+
+(function(testName){
+    console.log("[START]",testName);
     try{
          var TestUserModel = new  UserModel();
          console.log("[Test OK]");
@@ -44,6 +76,8 @@ var UserModel = require("../models/user.js");
         console.log("[Test failed]",err);
     }
 }("Create User Model"));
+
+
 
 /*
 ConfigKeys.appKey : null;

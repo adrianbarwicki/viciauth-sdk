@@ -4,7 +4,7 @@
  2. Check Method
 */
 var FbConfig = (function(){
-        var fbConfig = function(clientID,clientSecret,callbackURL,passReqToCallback,profileFields){
+        var FbConfig = function(clientID,clientSecret,callbackURL,passReqToCallback,profileFields){
   
             var defaultProfileFields = ['id', 'name', 'displayName', 'gender', 'profileUrl', 'email'];
   
@@ -22,7 +22,7 @@ var FbConfig = (function(){
                 this.clientSecret = clientSecret;
             };
   
-            this.callbackURL = function(callbackURL){
+            this.setCallbackURL = function(callbackURL){
                 this.callbackURL = callbackURL;
             };
   
@@ -31,7 +31,7 @@ var FbConfig = (function(){
             };
   
           };
-        return fbConfig;
+        return FbConfig;
   }());
 
 module.exports = FbConfig;

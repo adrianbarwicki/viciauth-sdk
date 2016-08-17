@@ -13,7 +13,8 @@
 
 var request = require("request");
 var UserModel = require("./models/user");
-var FbConfigModel = require("./models/fbConfig");
+var FbConfigModel = require("./models/fbConfig.js");
+
 var VERSION = "1.0.0";
 
 
@@ -75,8 +76,14 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
       User : UserModel
     };
 
-    this.FbConfig = new FbConfigModel();
+    
+ 
+    this.FbConfig=new FbConfigModel;
 
+    this.addToProfileFields = function(profileField){
+        this.profileFields.push(profileField);
+    };
+    
     this.configureRoutes = configureRoutes;
 
     // resources    
@@ -163,8 +170,9 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
         });      
     };    
     
-  return ViciAuthSDK;  
+  
 
 }
 
-});
+return ViciAuthSDK;  
+}());
