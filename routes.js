@@ -37,8 +37,8 @@ function initRoutes(app,fbConfig,connectToFacebook) {
 		return done(null, User);
 	});
 
-	passport.use(new FacebookStrategy(fbConfig,(req, token, refreshToken, profile, done)=> {
-
+	passport.use(new FacebookStrategy(fbConfig,(token, refreshToken, profile, done)=>{
+            
 			var User, Profile,Photos,alreadyExists = false;
 
 		    var Profile = new ViciAuthUserModel();
@@ -52,12 +52,13 @@ function initRoutes(app,fbConfig,connectToFacebook) {
 
              Profile.setFbToken(token);
              Profile.setFbRefreshToken(refreshToken);
-        
-             connectToFacebook(token, refreshToken,Profile,(err,rUser)=>{
+             
+             console.log("[ViciAuth] [INFO] Connecting to FB.");
+             connectToFacebook(token,refreshToken,Profile,(err,rUser)=>{
                  if(err){
                      return done(JSON.stringify(err));
                  }
-                 done(err,{ userId : rUser.userId });
+                 done(err,{ userId : rUser.userId, token : rUser.token });
              });
         
 		}));
