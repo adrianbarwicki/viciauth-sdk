@@ -65,7 +65,7 @@ this.configureRoutes = configureRoutes;
 
 
 // public methods    
-this.destroyToken = require("libs/destroyToken");
+this.destroyToken = require("./libs/destroyToken.js");
     
 this.checkToken = checkToken;
 this.connectToFacebook = connectToFacebook;
