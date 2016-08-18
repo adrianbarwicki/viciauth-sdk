@@ -146,18 +146,13 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
              headers : OPTS.headers || {}
          };
         
+         requestOptions.url = OPTS.protocol + "://" + OPTS.host + ":" + OPTS.port + uri;
          requestOptions.headers['x-auth-viciauth-app-key'] = APP_KEY;
          requestOptions.headers['x-auth-viciauth-api-key'] = API_KEY;
          requestOptions.headers['x-auth-viciauth-token'] = params.token
-
-         var options = {
-          url: OPTS.protocol + "://" + OPTS.host + ":" + OPTS.port + uri,
-          headers: requestOptions
-        };
-
-
-        options.form = params;
-        request.post(options, (err, response, body) => {
+         requestOptions.form = params;
+        
+        request.post(requestOptions, (err, response, body) => {
           if(err){
             try{
               err = JSON.parse(err);
