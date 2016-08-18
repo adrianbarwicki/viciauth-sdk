@@ -150,7 +150,7 @@ var ViciAuthSDK = function(apiKey,appKey){
          requestOptions.headers['x-auth-viciauth-app-key'] = APP_KEY;
          requestOptions.headers['x-auth-viciauth-api-key'] = API_KEY;
          requestOptions.headers['x-auth-viciauth-token'] = params.token
-         requestOptions.form = { token : params.token };
+         requestOptions.form = params; //{ token : params.token };
         
  
         
