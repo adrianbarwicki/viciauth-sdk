@@ -150,7 +150,7 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
             try{
               err = JSON.parse(err);
             }catch(e){
-              err = {};
+              console.error(err);
             }
             return callback({status:502,err:err});
           }
