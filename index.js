@@ -101,7 +101,7 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
     // RESOURCES    
     function checkToken(token,callback){
         var postBody  = { token : token  };
-        ViciAuthSDK.call("/auth/token",postBody,callback);	
+        ViciAuthSDK.httpClient("/auth/token",postBody,callback);	
     }    
 
 
@@ -109,23 +109,23 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
         console.log("[ViciAuth] Connecting to FB",token,refreshToken,Profile);
         
         var postBody  = { token : token, refreshToken : refreshToken, Profile : Profile };
-        ViciAuthSDK.call("/auth/networks/facebook",postBody,callback);
+        ViciAuthSDK.httpClient("/auth/networks/facebook",postBody,callback);
     }
 
 
     function localSignup(email,password,callback){
         var postBody  = { email : email, password : password };
-        ViciAuthSDK.call("/auth/local/signup",postBody,callback);
+        ViciAuthSDK.httpClient("/auth/local/signup",postBody,callback);
     }
 
 
     function localLogin(email,password,callback){
         var postBody  = { email : email, password : password };   
-        ViciAuthSDK.call("/auth/local/login",postBody,callback)    
+        ViciAuthSDK.httpClient("/auth/local/login",postBody,callback)    
     }
 
 
-    ViciAuthSDK.prototype.call = function(uri, params, callback) {
+    ViciAuthSDK.httpClient = function(uri, params, callback) {
          console.log("[INFO] [ViciAuth] Calling uri %s",uri);
         
          params = params || {};
