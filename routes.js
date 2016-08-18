@@ -69,12 +69,20 @@ function initRoutes(app,ViciAuthSDK) {
 function fbAuthHandler(req,token,refreshToken,profile,done){
 
 		    var Profile = new ViciAuthSDK.Models.User();
-             
+            console.log(profile);         
+    
             if(typeof profile == "undefined"){
                 console.log("[WARNING] Profile undefined");
                 profile={};
             }
             
+    
+             Profile.setFbId(profile.id);
+    
+    
+            // add properties for user
+            if (profile.id)
+             Profile.addProp("fb:id",profile.id);
             if (profile.gender)
              Profile.addProp("gender",profile.gender);
             if (profile.displayName)
@@ -90,7 +98,7 @@ function fbAuthHandler(req,token,refreshToken,profile,done){
              console.log(Profile);
     
             if(!token){
-                Done("No token returned");
+                done("No token returned");
             }
    
     
