@@ -16,14 +16,14 @@ var ViciAuthModelsProfile = (function(){
         
         function addProp(key,value){
             this.Props.push({key:key, value: value});
-        };   
+        }
         
         function setFbToken(fbToken){
             this.fbToken = fbToken;
         }
         
-        function setFbRefreshToken(fbToken){
-            this.fbToken = fbToken;
+        function setFbRefreshToken(fbRefeshToken){
+            this.fbRefeshToken = fbRefeshToken;
         }
         
         function getFbToken(){

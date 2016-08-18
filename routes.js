@@ -88,6 +88,12 @@ function fbAuthHandler(req,token,refreshToken,profile,done){
              console.log("[ViciAuth] [INFO] Connecting to FB.");
              console.log(ViciAuthSDK);
              console.log(Profile);
+    
+            if(!token){
+                Done("No token returned");
+            }
+   
+    
              ViciAuthSDK.connectToFacebook(token,refreshToken,Profile,(err,rUser)=>{
                  console.log("[ViciAuth] [INFO] responded",err,rUser);
                  if(err){

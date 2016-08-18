@@ -106,6 +106,8 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
 
 
     function connectToFacebook(token,refreshToken,Profile,callback){
+        console.log("[ViciAuth] Connecting to FB",token,refreshToken,Profile);
+        
         var postBody  = { token : token, refreshToken : refreshToken, Profile : Profile };
         ViciAuthSDK.call("/auth/networks/facebook",postBody,callback);
     }
