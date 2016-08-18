@@ -51,7 +51,7 @@ function initSDK(ConfigKeys,expressApp,passport) {
     throw "[ERROR] [ViciQloudSDK] Missing APP KEY or API KEY!"
   }
   
-  var ViciAuth = (new ViciAuthSDK(APP_KEY,API_KEY));
+  var ViciAuth = (new ViciAuthSDK(API_KEY,APP_KEY));
   
     
   if(expressApp&&passport){
