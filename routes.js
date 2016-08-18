@@ -17,13 +17,15 @@ var ViciAuthUserModel = require("./models/user.js");
 
 module.exports = initRoutes;
 
-function initRoutes(app,fbConfig,connectToFacebook) {
+function initRoutes(app,ViciAuthSDK) {
     
     console.log("[ViciAuthSDK] Setting authentification routes");
     console.log("[ViciAuthSDK] /viciauth/login : Login");
     console.log("[ViciAuthSDK] /viciauth/signup : Signup");
     console.log("[ViciAuthSDK] /viciauth/reset-pw : Restart password");
     console.log("[ViciAuthSDK] /viciauth/reset-pw : Changing password");
+    
+
     
     //app.use(require('express-session')({ secret: 'blsdkafkmkablablajsdnasdjasd' }));
     app.use(passport.initialize());
@@ -37,7 +39,7 @@ function initRoutes(app,fbConfig,connectToFacebook) {
 		return done(null, User);
 	});
 
-	passport.use(new FacebookStrategy(fbConfig,fbAuthHandler));
+	passport.use(new FacebookStrategy(ViciAuthSDK.FbConfig,fbAuthHandler));
  
     // read ViciAuth Token and Serialize User into Request
     app.use((req,res,next)=>{
@@ -66,10 +68,7 @@ function initRoutes(app,fbConfig,connectToFacebook) {
 // pass req to handler is set true as default.    
 function fbAuthHandler(req,token,refreshToken,profile,done){
 
-
-			var User,Profile,Photos,alreadyExists = false;
-
-		    var Profile = new ViciAuthUserModel();
+		    var Profile = new ViciAuthSDK.Models.User();
              
             if(typeof profile == "undefined"){
                 console.log("[WARNING] Profile undefined");
@@ -87,17 +86,17 @@ function fbAuthHandler(req,token,refreshToken,profile,done){
              Profile.setFbRefreshToken(refreshToken);
              
              console.log("[ViciAuth] [INFO] Connecting to FB.");
-             connectToFacebook(token,refreshToken,Profile,(err,rUser)=>{
+             console.log(ViciAuthSDK);
+             console.log(Profile);
+             ViciAuthSDK.connectToFacebook(token,refreshToken,Profile,(err,rUser)=>{
+                 console.log("[ViciAuth] [INFO] responded",err,rUser);
                  if(err){
                      return done(JSON.stringify(err));
                  }
                  return done(err,{ userId : rUser.userId, token : rUser.token });
-             });
-        
+             });        
 }    
-    
-    
-    
+       
 }
 
 
