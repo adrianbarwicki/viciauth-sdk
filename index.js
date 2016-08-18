@@ -134,9 +134,17 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
              throw "[ERROR] call method must be provided with callback function!"
          }
         
+         if(!APP_KEY){
+             console.log("[WARNING] [ViciAuth] No app key");
+         }
+        
+         if(!API_KEY){
+             console.log("[WARNING] [ViciAuth] No api key");
+         }
+        
          var requestOptions = OPTS;
          requestOptions.headers['x-auth-viciauth-app-key'] = APP_KEY;
-         requestOptions.headers['x-auth-viciauth-api-key'] = APP_KEY;
+         requestOptions.headers['x-auth-viciauth-api-key'] = API_KEY;
          requestOptions.headers['x-auth-viciauth-token'] = params.token
 
          var options = {
