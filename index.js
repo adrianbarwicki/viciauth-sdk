@@ -142,7 +142,7 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
              console.log("[WARNING] [ViciAuth] No api key");
          }
         
-         var requestOptions = OPTS;
+         var requestOptions = OPTS.headers;
          requestOptions.headers['x-auth-viciauth-app-key'] = APP_KEY;
          requestOptions.headers['x-auth-viciauth-api-key'] = API_KEY;
          requestOptions.headers['x-auth-viciauth-token'] = params.token
