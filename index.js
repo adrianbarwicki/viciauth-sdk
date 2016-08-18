@@ -19,6 +19,7 @@ var VERSION = "1.0.0";
 
 
 var OPTS = {
+    protocol:"http",
     host: 'viciauth.com',
     port: 80,
     prefix: '/',
@@ -139,7 +140,7 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
          requestOptions.headers['x-auth-viciauth-token'] = params.token
 
          var options = {
-          url: OPTS.API_URL + uri,
+          url: OPTS.protocol + "://" + OPTS.host + ":" + OPTS.port + uri,
           headers: requestOptions
         };
 
