@@ -25,7 +25,7 @@ var OPTS = {
     prefix: '/',
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      //'Content-Type': 'application/json',
       'User-Agent': 'ViciAuth/Node-v1.0'
     }
 };
@@ -44,7 +44,7 @@ function initSDK(ConfigKeys,expressApp,passport) {
   }
 
     
-  var API_URL = OPTS;    
+  //var API_URL = OPTS.protoc;    
   var API_KEY = ConfigKeys ? ConfigKeys.apiKey : null;
   var APP_KEY = ConfigKeys ? ConfigKeys.appKey : null; 
   if( !APP_KEY || !API_KEY ){
@@ -150,8 +150,9 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
          requestOptions.headers['x-auth-viciauth-app-key'] = APP_KEY;
          requestOptions.headers['x-auth-viciauth-api-key'] = API_KEY;
          requestOptions.headers['x-auth-viciauth-token'] = params.token
-         requestOptions.form = params;
+         requestOptions.form = { token : params.token };
         
+ 
         
         console.log("[ViciAuth] Request options",requestOptions);
         request.post(requestOptions, (err, response, body) => {
