@@ -152,6 +152,8 @@ var ViciAuthSDK = function(apiUrl,apiKey,appKey){
          requestOptions.headers['x-auth-viciauth-token'] = params.token
          requestOptions.form = params;
         
+        
+        console.log("[ViciAuth] Request options",requestOptions);
         request.post(requestOptions, (err, response, body) => {
           if(err){
             try{
