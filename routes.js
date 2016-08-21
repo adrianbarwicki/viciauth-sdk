@@ -27,9 +27,14 @@ function initRoutes(app,ViciAuthSDK) {
     
 
     
-    //app.use(require('express-session')({ secret: 'blsdkafkmkablablajsdnasdjasd' }));
+    
+   /* 
+       Persistent login sessions (optional)
+       If authentication succeeds, a session will be established and maintained via a cookie set in the user's browser.
+   */
+    app.use(require('express-session')({ secret:  require('random-token')(256)  }));
     app.use(passport.initialize());
-    //app.use(passport.session());  
+    app.use(passport.session());  
     
 	passport.serializeUser(function(User, done) {
 		return done(null, User);
