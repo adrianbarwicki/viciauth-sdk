@@ -1,5 +1,5 @@
 /*
-    @name ViciAuthSDK
+    ViciAuthSDK - Authentification libary for NodeJS for viciauth.com
     @version 1.0
     @desc Client Authentification Module to Communicate with ViciAuthAPI.
     @author Adrian Barwicki
@@ -25,7 +25,6 @@ var OPTS = {
     prefix: '/',
     method: 'POST',
     headers: {
-      //'Content-Type': 'application/json',
       'User-Agent': 'ViciAuth/Node-v1.0'
     }
 };
@@ -94,18 +93,36 @@ var ViciAuthSDK = function(apiKey,appKey){
     this.localLogin = localLogin;
  
 
+    
+    /**
+        Configure local routes (only express apps supported) for Local Auth and Facebook Auth
+        @param app{ExpressApp} - ExpressApp
+        @logs information of configured routes
+    */
     function configureRoutes(app){
       require("./routes")(app,this);  
     }
 
-
-    // RESOURCES    
+    /**
+        Verifies ViciAuth token and returns Users associated to this token
+        @param token{string} - ViciAuth Auth Token
+        @param refreshToken{string} - FB Auth Refresh Token
+        @param callback{function}, called with (err,ViciAuthUser)
+    */   
     function checkToken(token,callback){
         var postBody  = { token : token  };
         ViciAuthSDK.httpClient("/auth/token",postBody,callback);	
     }    
 
 
+    
+    /**
+        Facebook Auth -> needs to be preconfigured by the client (@see FbConfig)
+        @param token{string} - FB Auth Token
+        @param refreshToken{string} - FB Auth Refresh Token
+        @param Profile{ViciAuthProfile} - contains Emails[] and Props[] 
+        @param callback{function}, called with (err,ViciAuthUser)
+    */
     function connectToFacebook(token,refreshToken,Profile,callback){
         console.log("[ViciAuth] Connecting to FB",token,refreshToken,Profile);
         
@@ -113,20 +130,39 @@ var ViciAuthSDK = function(apiKey,appKey){
         ViciAuthSDK.httpClient("/auth/networks/facebook",postBody,callback);
     }
 
-
+    /**
+        Local signup with email and password
+        @param email{string}
+        @param password{string}
+        @param callback{function}
+    */
     function localSignup(email,password,callback){
         var postBody  = { email : email, password : password };
         ViciAuthSDK.httpClient("/auth/local/signup",postBody,callback);
     }
 
-
+    /**
+        Local login with email and password
+        @param email{string}
+        @param password{string}
+        @param callback{function}
+    */
     function localLogin(email,password,callback){
         var postBody  = { email : email, password : password };   
-        ViciAuthSDK.httpClient("/auth/local/login",postBody,callback)    
+        ViciAuthSDK.httpClient("/auth/local/login",postBody,callback);   
     }
 
 
-    ViciAuthSDK.httpClient = function(uri, params, callback) {
+    ViciAuthSDK.httpClient = httpClient
+        
+    
+    /**
+        HTTP (POST requests) Client for ViciAuth, sends requests with viciauth app key and api key in header
+        @param uri{string} - API paths of ViciAuth.com
+        @param params{Object} - Body of the request
+        @param callback{function}, called with (err,ViciAuthUser)
+    */
+    function httpClient(uri, params, callback) {
          console.log("[INFO] [ViciAuth] Calling uri %s",uri);
         
          params = params || {};
@@ -185,7 +221,7 @@ var ViciAuthSDK = function(apiKey,appKey){
           return callback(null,body);
 
         });      
-    };    
+    }   
     
   
 

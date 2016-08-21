@@ -1,15 +1,15 @@
 /*
     Additional routes provided to the express app for handling signup, login and facebook authentification
     @param app: Express App
-    @param fbConfig : fbConfig Object, check models/fbConfig.js for reference
+    @param ViciAuthSDK : we need to have all methods accessible from here for configuration
     @todo: 
-        1. custom express-session secret.
-        2. Implementation for the login and signup routes.
-        3. API for asynchrouns authentification
+        API for asynchrouns authentification
 */
 
 
 var async = require("async");
+// passwort strategies
+var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var passport = require('passport');
 
@@ -20,10 +20,12 @@ module.exports = initRoutes;
 function initRoutes(app,ViciAuthSDK) {
     
     console.log("[ViciAuthSDK] Setting authentification routes");
-    console.log("[ViciAuthSDK] /viciauth/login : Login");
-    console.log("[ViciAuthSDK] /viciauth/signup : Signup");
-    console.log("[ViciAuthSDK] /viciauth/reset-pw : Restart password");
-    console.log("[ViciAuthSDK] /viciauth/reset-pw : Changing password");
+    console.log("[ViciAuthSDK] GET /viciauth/login : Login");
+    console.log("[ViciAuthSDK] GET /viciauth/signup : Signup");
+    console.log("[ViciAuthSDK] GET /viciauth/reset-pw : Restart password");
+    console.log("[ViciAuthSDK] GET /viciauth/reset-pw : Changing password");
+    console.log("[ViciAuthSDK] POST /viciauth/login : Session based login");
+    console.log("[ViciAuthSDK] POST /viciauth/signup : Session based signup");
     
 
     
@@ -44,8 +46,11 @@ function initRoutes(app,ViciAuthSDK) {
 		return done(null, User);
 	});
 
+    
 	passport.use(new FacebookStrategy(ViciAuthSDK.FbConfig,fbAuthHandler));
- 
+    
+    passport.use(new LocalStrategy(localLoginHandler));
+    
     // read ViciAuth Token and Serialize User into Request
     app.use((req,res,next)=>{
         next();
@@ -55,9 +60,13 @@ function initRoutes(app,ViciAuthSDK) {
         res.send("Not implemented");
     });
 
-    app.get('/viciauth/signup',(req,res)=>{
+     app.get('/viciauth/signup',(req,res)=>{
         res.send("Not implemented");
     });
+    
+    
+    
+    app.post('/viciauth/signup',localSignupHandler);
 
     app.get('/viciauth/facebook',passport.authenticate('facebook', {
         scope: ['email']
@@ -69,8 +78,46 @@ function initRoutes(app,ViciAuthSDK) {
     }));    
    
     
+/**
+        (Session) Sets up POST path to which users can submit forms to login
+        @bodyparam email {string}
+        @bodyparam password {string}
+*/    
+function localSignupHandler(req,res){
+    ViciAuth.localSignup(email,password,(err,rUser) => {
+          if(err){
+            console.log("[ViciAuth] LocalSignup Error",err);
+            return res.status(400).send(err);
+          } 
     
-// pass req to handler is set true as default.    
+          passport.authenticate('local')(req, res,() => {
+                    res.redirect('/');
+          });
+    });
+}
+
+/**
+        (Session) Implements Password local Authentification strategy
+        @param email {string}
+        @param password {string}
+        @param callback {done}
+*/
+function localLoginHandler(email, password, done){
+    ViciAuth.localLogin(email,password,(err,rUser) => {
+            return done(err,{ userId : rUser.userId, token : rUser.token });
+    });
+}    
+    
+/**
+        (Session) Implementation of Passwort FB Authentification Strategy
+        @param req {HTTPRequest}
+        @param token {string} - Fb Token
+        @param refreshToken {string} - refreshToken
+        @param profile {Object} - fb profile (parsed by passwort library)
+        @param done {callback} 
+        @TODO
+        Facebook Emails should be appended to ViciAuth profile
+*/  
 function fbAuthHandler(req,token,refreshToken,profile,done){
 
 		    var Profile = new ViciAuthSDK.Models.User();
@@ -83,7 +130,6 @@ function fbAuthHandler(req,token,refreshToken,profile,done){
             
     
              Profile.setFbId(profile.id);
-    
     
             // add properties for user
             if (profile.id)
