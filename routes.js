@@ -76,6 +76,8 @@ function initRoutes(app,ViciAuthSDK) {
     
     /* POST REQUESTS */
     app.post('/viciauth/login',passport.authenticate('local', {
+            usernameField: 'email',
+            passwordField: 'password',
             successRedirect: '/',
             failureRedirect: '/'
     }));
@@ -93,10 +95,16 @@ function localSignupHandler(req,res){
             console.log("[ViciAuth] LocalSignup Error",err);
             return res.status(400).send(err);
           } 
-    
-          passport.authenticate('local')(req, res,() => {
-                    res.redirect('/');
-          });
+          console.log(rUser);
+        
+          req.login(rUser, function(err) {
+              if (err) { 
+                  return res.status(500).send(err); 
+              }
+          return res.redirect('/u/account');
+        });
+        
+  
     });
 }
 
