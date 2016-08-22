@@ -73,7 +73,6 @@ function initRoutes(app,ViciAuthSDK) {
             successRedirect: '/',
             failureRedirect: '/'
     }));    
-   
     
     /* POST REQUESTS */
     app.post('/viciauth/login',passport.authenticate('local', {
