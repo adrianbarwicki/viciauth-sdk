@@ -90,6 +90,10 @@ function initRoutes(app,ViciAuthSDK) {
         @bodyparam password {string}
 */    
 function localSignupHandler(req,res){
+    
+    var email = req.body.email;
+    var password = req.body.password;
+    
     ViciAuthSDK.localSignup(email,password,(err,rUser) => {
           if(err){
             console.log("[ViciAuth] LocalSignup Error",err);
