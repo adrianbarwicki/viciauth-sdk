@@ -48,7 +48,6 @@ function initRoutes(app,ViciAuthSDK) {
 
     
 	passport.use(new FacebookStrategy(ViciAuthSDK.FbConfig,fbAuthHandler));
-    
     passport.use(new LocalStrategy(localLoginHandler));
     
     // read ViciAuth Token and Serialize User into Request
@@ -56,6 +55,8 @@ function initRoutes(app,ViciAuthSDK) {
         next();
     });
 
+    
+    
     app.get('/viciauth/login',(req,res)=>{
         res.send("Not implemented");
     });
@@ -64,10 +65,6 @@ function initRoutes(app,ViciAuthSDK) {
         res.send("Not implemented");
     });
     
-    
-    
-    app.post('/viciauth/signup',localSignupHandler);
-
     app.get('/viciauth/facebook',passport.authenticate('facebook', {
         scope: ['email']
     }));
@@ -77,6 +74,14 @@ function initRoutes(app,ViciAuthSDK) {
             failureRedirect: '/'
     }));    
    
+    
+    /* POST REQUESTS */
+    app.post('/viciauth/login',passport.authenticate('local', {
+            successRedirect: '/',
+            failureRedirect: '/'
+    }));
+    
+    app.post('/viciauth/signup',localSignupHandler);
     
 /**
         (Session) Sets up POST path to which users can submit forms to login
