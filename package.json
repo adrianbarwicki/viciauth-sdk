@@ -13,8 +13,8 @@
   "keywords": [
     "auth"
   ],
-  "author": "viciceo",
-  "license": "viciqloud",
+  "author": "ViciQloud, Adrian Barwicki",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/viciqloud/viciauth-sdk/issues"
   },

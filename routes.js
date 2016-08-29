@@ -15,6 +15,12 @@ var passport = require('passport');
 
 var ViciAuthUserModel = require("./models/user.js");
 
+
+var ejs = require("ejs");
+
+
+
+
 module.exports = initRoutes;
 
 function initRoutes(app,ViciAuthSDK) {
@@ -27,8 +33,12 @@ function initRoutes(app,ViciAuthSDK) {
     console.log("[ViciAuthSDK] POST /viciauth/login : Session based login");
     console.log("[ViciAuthSDK] POST /viciauth/signup : Session based signup");
     
-
-    
+    /*
+        Rendering templates config
+    */
+    app.set('view engine', 'ejs');
+    app.set('view engine', 'ejs');
+    app.set('layout', 'layout');
     
    /* 
        Persistent login sessions (optional)
@@ -62,7 +72,7 @@ function initRoutes(app,ViciAuthSDK) {
     });
 
      app.get('/viciauth/signup',(req,res)=>{
-        res.send("Not implemented");
+        res.render("viciauth.signup.ejs");
     });
     
     app.get('/viciauth/facebook',passport.authenticate('facebook', {

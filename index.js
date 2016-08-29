@@ -65,33 +65,35 @@ var ViciAuthSDK = (function(){
  
 var ViciAuthSDK = function(apiKey,appKey){
     
-    // private attrs
+    //@private
     //var API_URL = apiUrl;
     var API_KEY = apiKey;
     var APP_KEY = appKey;
 
-
-    // extends  
+    //@public
+    // Models
     this.Models={
       User : UserModel
     };
 
     
  
+    
     this.FbConfig=new FbConfigModel;
 
     this.addToProfileFields = function(profileField){
         this.profileFields.push(profileField);
     };
     
+   
     this.configureRoutes = configureRoutes;
 
-    // resources    
+    
     this.checkToken = checkToken;
     this.connectToFacebook = connectToFacebook;
     this.localSignup = localSignup; 
     this.localLogin = localLogin;
- 
+    this.destroyToken = destroyToken;
 
     
     /**
@@ -114,6 +116,15 @@ var ViciAuthSDK = function(apiKey,appKey){
         ViciAuthSDK.httpClient("/auth/token",postBody,callback);	
     }    
 
+    /**
+        Destroys ViciQloud Token
+        @param token{string} - ViciAuth Auth Token
+        @param callback{function}, called with (err)
+    */   
+    function destroyToken(token,callback){
+        var postBody  = { token : token  };
+        ViciAuthSDK.httpClient("/auth/destroy-token",postBody,callback);	
+    }
 
     
     /**
@@ -222,8 +233,6 @@ var ViciAuthSDK = function(apiKey,appKey){
 
         });      
     }   
-    
-  
 
 }
 
