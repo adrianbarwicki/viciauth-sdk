@@ -130,6 +130,7 @@ function localSignupHandler(req,res){
 */
 function localLoginHandler(email, password, done){
     ViciAuthSDK.localLogin(email,password,(err,rUser) => {
+            console.log(err,rUser);
             return done(err,{ userId : rUser.userId, token : rUser.token });
     });
 }    
