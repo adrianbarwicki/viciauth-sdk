@@ -32,7 +32,8 @@ function initRoutes(app,ViciAuthSDK) {
     console.log("[ViciAuthSDK] GET /viciauth/reset-pw : Changing password");
     console.log("[ViciAuthSDK] POST /viciauth/login : Session based login");
     console.log("[ViciAuthSDK] POST /viciauth/signup : Session based signup");
-    
+    console.log("[ViciAuthSDK] POST /viciauth/api/login : Token based login");
+    console.log("[ViciAuthSDK] POST /viciauth/api/signup : Token based signup");
     /*
         Rendering templates config
     */
@@ -88,6 +89,32 @@ function initRoutes(app,ViciAuthSDK) {
     app.post('/viciauth/login',localLoginHandler);
     app.post('/viciauth/signup',localSignupHandler);
     
+    app.post('/viciauth/api/login',(req,res)=>{
+        var email = req.body.email;
+        var password = req.body.password;
+        
+        ViciAuthSDK.localLogin(email,password,(err,rUser) => {
+          if(err){
+            console.log("[ViciAuth] LocalSignup Error",err);
+            return res.status(400).send(err);
+          } 
+          res.status(200).send(rUser);
+        });
+    });
+    
+    app.post('/viciauth/api/signup',(req,res)=>{
+        var email = req.body.email;
+        var password = req.body.password;
+        
+        ViciAuthSDK.localSignup(email,password,(err,rUser) => {
+          if(err){
+            console.log("[ViciAuth] LocalSignup Error",err);
+            return res.status(400).send(err);
+          } 
+          res.status(200).send(rUser);
+        });
+    });
+    
     /**
             (Session) Sets up POST path to which users can submit forms to login
             @bodyparam email {string}
@@ -103,23 +130,24 @@ function initRoutes(app,ViciAuthSDK) {
         }
 
         ViciAuthSDK.localSignup(email,password,(err,rUser) => {
-              if(err){
-                console.log("[ViciAuth] LocalSignup Error",err);
-                return res.status(400).send(err);
-              } 
-              console.log(rUser);
+          if(err){
+            console.log("[ViciAuth] LocalSignup Error",err);
+            return res.status(400).send(err);
+          } 
+          console.log(rUser);
 
-             req.login(rUser, function(err) {
-              if (err) { 
-                  return res.status(500).send(err); 
-              }
-              return res.redirect('/u/account');
-             });
-
-
+         req.login(rUser, function(err) {
+          if (err) { 
+              return res.status(500).send(err); 
+          }
+          return res.redirect('/u/account');
+         });
         });
     }
 
+    
+
+    
     /**
             (Session) Implements Password local Authentification strategy
             @param email {string}
