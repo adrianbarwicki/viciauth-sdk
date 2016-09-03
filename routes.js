@@ -68,7 +68,7 @@ function initRoutes(app,ViciAuthSDK) {
     
     
     app.get('/viciauth/login',(req,res)=>{
-        res.send("Not implemented");
+        res.render("viciauth.login.ejs");
     });
 
      app.get('/viciauth/signup',(req,res)=>{
@@ -85,112 +85,124 @@ function initRoutes(app,ViciAuthSDK) {
     }));    
     
     /* POST REQUESTS */
-    app.post('/viciauth/login',passport.authenticate('local', {
-            usernameField: 'email',
-            passwordField: 'password',
-            successRedirect: '/',
-            failureRedirect: '/'
-    }));
-    
+    app.post('/viciauth/login',localLoginHandler);
     app.post('/viciauth/signup',localSignupHandler);
     
-/**
-        (Session) Sets up POST path to which users can submit forms to login
-        @bodyparam email {string}
-        @bodyparam password {string}
-*/    
-function localSignupHandler(req,res){
-    
-    var email = req.body.email;
-    var password = req.body.password;
-    
-    ViciAuthSDK.localSignup(email,password,(err,rUser) => {
-          if(err){
-            console.log("[ViciAuth] LocalSignup Error",err);
-            return res.status(400).send(err);
-          } 
-          console.log(rUser);
-        
-          req.login(rUser, function(err) {
+    /**
+            (Session) Sets up POST path to which users can submit forms to login
+            @bodyparam email {string}
+            @bodyparam password {string}
+    */    
+    function localSignupHandler(req,res){
+
+        var email = req.body.email;
+        var password = req.body.password;
+
+        if(!email || !password){
+            return res.status(400).send("INITIAL_PARAMS");
+        }
+
+        ViciAuthSDK.localSignup(email,password,(err,rUser) => {
+              if(err){
+                console.log("[ViciAuth] LocalSignup Error",err);
+                return res.status(400).send(err);
+              } 
+              console.log(rUser);
+
+             req.login(rUser, function(err) {
               if (err) { 
                   return res.status(500).send(err); 
               }
-          return res.redirect('/u/account');
+              return res.redirect('/u/account');
+             });
+
+
         });
-        
-  
-    });
-}
+    }
 
-/**
-        (Session) Implements Password local Authentification strategy
-        @param email {string}
-        @param password {string}
-        @param callback {done}
-*/
-function localLoginHandler(email, password, done){
-    ViciAuthSDK.localLogin(email,password,(err,rUser) => {
-            console.log(err,rUser);
-            return done(err,{ userId : rUser.userId, token : rUser.token });
-    });
-}    
-    
-/**
-        (Session) Implementation of Passwort FB Authentification Strategy
-        @param req {HTTPRequest}
-        @param token {string} - Fb Token
-        @param refreshToken {string} - refreshToken
-        @param profile {Object} - fb profile (parsed by passwort library)
-        @param done {callback} 
-        @TODO
-        Facebook Emails should be appended to ViciAuth profile
-*/  
-function fbAuthHandler(req,token,refreshToken,profile,done){
+    /**
+            (Session) Implements Password local Authentification strategy
+            @param email {string}
+            @param password {string}
+            @param callback {done}
+    */
+    function localLoginHandler(req,res){
 
-		    var Profile = new ViciAuthSDK.Models.User();
-            console.log(profile);         
-    
-            if(typeof profile == "undefined"){
-                console.log("[WARNING] Profile undefined");
-                profile={};
-            }
-            
-    
-             Profile.setFbId(profile.id);
-    
-            // add properties for user
-            if (profile.id)
-             Profile.addProp("fb:id",profile.id);
-            if (profile.gender)
-             Profile.addProp("gender",profile.gender);
-            if (profile.displayName)
-             Profile.addProp("fb:displayName",profile.displayName);
-            if (profile.profileUrl)
-             Profile.addProp("fb:profileUrl",profile.profileUrl);
+        var email = req.body.email;
+        var password = req.body.password;
 
-             Profile.setFbToken(token);
-             Profile.setFbRefreshToken(refreshToken);
-             
-             console.log("[ViciAuth] [INFO] Connecting to FB.");
-             console.log(ViciAuthSDK);
-             console.log(Profile);
-    
-            if(!token){
-                done("No token returned");
-            }
-   
-    
-             ViciAuthSDK.connectToFacebook(token,refreshToken,Profile,(err,rUser)=>{
-                 console.log("[ViciAuth] [INFO] responded",err,rUser);
-                 if(err){
-                     return done(JSON.stringify(err));
-                 }
-                 return done(err,{ userId : rUser.userId, token : rUser.token });
-             });        
-}    
+        if(!email || !password){
+            return res.status(400).send("INITIAL_PARAMS");
+        }
+
+        ViciAuthSDK.localLogin(email,password,(err,rUser) => {
+                console.log(err,rUser);
+                if(err){
+                    console.log("[ViciAuth] LocalSignup Error",err);
+                    return res.status(400).send(err);
+                } 
+                console.log(rUser);
+                req.login(rUser, function(err) {
+                      if (err) { 
+                          return res.status(500).send(err); 
+                      }
+                      return res.redirect('/u/account');
+                 });
+        });
+    }    
+
+    /**
+            (Session) Implementation of Passwort FB Authentification Strategy
+            @param req {HTTPRequest}
+            @param token {string} - Fb Token
+            @param refreshToken {string} - refreshToken
+            @param profile {Object} - fb profile (parsed by passwort library)
+            @param done {callback} 
+            @TODO
+            Facebook Emails should be appended to ViciAuth profile
+    */  
+    function fbAuthHandler(req,token,refreshToken,profile,done){
+
+                var Profile = new ViciAuthSDK.Models.User();
+                console.log(profile);         
+
+                if(typeof profile == "undefined"){
+                    console.log("[WARNING] Profile undefined");
+                    profile={};
+                }
+
+
+                 Profile.setFbId(profile.id);
+
+                // add properties for user
+                if (profile.id)
+                 Profile.addProp("fb:id",profile.id);
+                if (profile.gender)
+                 Profile.addProp("gender",profile.gender);
+                if (profile.displayName)
+                 Profile.addProp("fb:displayName",profile.displayName);
+                if (profile.profileUrl)
+                 Profile.addProp("fb:profileUrl",profile.profileUrl);
+
+                 Profile.setFbToken(token);
+                 Profile.setFbRefreshToken(refreshToken);
+
+                 console.log("[ViciAuth] [INFO] Connecting to FB.");
+                 console.log(ViciAuthSDK);
+                 console.log(Profile);
+
+                if(!token){
+                    done("No token returned");
+                }
+
+
+                 ViciAuthSDK.connectToFacebook(token,refreshToken,Profile,(err,rUser)=>{
+                     console.log("[ViciAuth] [INFO] responded",err,rUser);
+                     if(err){
+                         return done(JSON.stringify(err));
+                     }
+                     return done(err,{ userId : rUser.userId, token : rUser.token });
+                 });        
+    }    
        
 }
-
-
-
-
