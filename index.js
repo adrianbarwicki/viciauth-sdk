@@ -14,9 +14,8 @@
 var request = require("request");
 var UserModel = require("./models/user");
 var FbConfigModel = require("./models/fbConfig.js");
-
+var emailService = require("./services/emailService.js");
 var VERSION = "1.0.0";
-
 
 var OPTS = {
     protocol:"http",
@@ -29,10 +28,7 @@ var OPTS = {
     }
 };
 
-
-
 module.exports = initSDK;
-	
 
 function initSDK(ConfigKeys,expressApp,passport) {
 
@@ -42,7 +38,6 @@ function initSDK(ConfigKeys,expressApp,passport) {
     throw "[ViciAuthSDK] AppKey or ApiKey not specified";
   }
 
-    
   //var API_URL = OPTS.protoc;    
   var API_KEY = ConfigKeys ? ConfigKeys.apiKey : null;
   var APP_KEY = ConfigKeys ? ConfigKeys.appKey : null; 
@@ -52,14 +47,12 @@ function initSDK(ConfigKeys,expressApp,passport) {
   
   var ViciAuth = (new ViciAuthSDK(API_KEY,APP_KEY));
   
-    
-  if(expressApp&&passport){
+  if (expressApp && passport) {
       ViciAuth.configureRoutes(expressApp,passport);  
   }
 
   return ViciAuth;
 }
-
 
 var ViciAuthSDK = (function(){
  
@@ -69,6 +62,9 @@ var ViciAuthSDK = function(apiKey,appKey){
     //var API_URL = apiUrl;
     var API_KEY = apiKey;
     var APP_KEY = appKey;
+    var MANDRILL_KEY = '';
+
+    var WELCOME_EMAIL = {};
 
     //@public
     // Models
@@ -76,26 +72,29 @@ var ViciAuthSDK = function(apiKey,appKey){
       User : UserModel
     };
 
-    
- 
-    
     this.FbConfig=new FbConfigModel;
 
     this.addToProfileFields = function(profileField){
         this.profileFields.push(profileField);
     };
     
-   
     this.configureRoutes = configureRoutes;
 
-    
+    this.setMandrillKey = function(key) {
+       MANDRILL_KEY = key;
+    };
+    this.setWelcomeEmail = function (html, subject, fromEmail) {
+       WELCOME_EMAIL.init = true;
+       WELCOME_EMAIL.html = html;
+       WELCOME_EMAIL.subject = subject;
+       WELCOME_EMAIL.fromEmail = fromEmail;
+    };
     this.checkToken = checkToken;
     this.connectToFacebook = connectToFacebook;
     this.localSignup = localSignup; 
     this.localLogin = localLogin;
     this.destroyToken = destroyToken;
-
-    
+ 
     /**
         Configure local routes (only express apps supported) for Local Auth and Facebook Auth
         @param app{ExpressApp} - ExpressApp
@@ -126,7 +125,6 @@ var ViciAuthSDK = function(apiKey,appKey){
         ViciAuthSDK.httpClient("/auth/destroy-token",postBody,callback);	
     }
 
-    
     /**
         Facebook Auth -> needs to be preconfigured by the client (@see FbConfig)
         @param token{string} - FB Auth Token
@@ -147,9 +145,13 @@ var ViciAuthSDK = function(apiKey,appKey){
         @param password{string}
         @param callback{function}
     */
-    function localSignup(email,password,callback){
-        var postBody  = { email : email, password : password };
+    function localSignup(email, password, callback){
+        var postBody  = { email: email, password: password };
         ViciAuthSDK.httpClient("/auth/local/signup",postBody,callback);
+
+        if (WELCOME_EMAIL.init) {
+            emailService.sendEmail(MANDRILL_KEY, email, WELCOME_EMAIL.html, WELCOME_EMAIL.subject, WELCOME_EMAIL.fromEmail);
+        }
     }
 
     /**
@@ -166,7 +168,6 @@ var ViciAuthSDK = function(apiKey,appKey){
 
     ViciAuthSDK.httpClient = httpClient
         
-    
     /**
         HTTP (POST requests) Client for ViciAuth, sends requests with viciauth app key and api key in header
         @param uri{string} - API paths of ViciAuth.com
