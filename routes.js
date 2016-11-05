@@ -6,25 +6,17 @@
         API for asynchrouns authentification
 */
 
-
 var async = require("async");
 // passwort strategies
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var passport = require('passport');
-
-var ViciAuthUserModel = require("./models/user.js");
-
-
 var ejs = require("ejs");
-
-
-
+var ViciAuthUserModel = require("./models/user.js");
 
 module.exports = initRoutes;
 
 function initRoutes(app,ViciAuthSDK) {
-    
     console.log("[ViciAuthSDK] Setting authentification routes");
     console.log("[ViciAuthSDK] GET /viciauth/login : Login");
     console.log("[ViciAuthSDK] GET /viciauth/signup : Signup");
@@ -57,26 +49,23 @@ function initRoutes(app,ViciAuthSDK) {
 		return done(null, User);
 	});
 
-    
 	passport.use(new FacebookStrategy(ViciAuthSDK.FbConfig,fbAuthHandler));
     passport.use(new LocalStrategy(localLoginHandler));
     
     // read ViciAuth Token and Serialize User into Request
-    app.use((req,res,next)=>{
+    app.use((req, res, next) => {
         next();
     });
 
-    
-    
-    app.get('/viciauth/login',(req,res)=>{
+    app.get('/viciauth/login', (req, res) => {
         res.render("viciauth.login.ejs");
     });
 
-     app.get('/viciauth/signup',(req,res)=>{
+     app.get('/viciauth/signup', (req,res) => {
         res.render("viciauth.signup.ejs");
     });
     
-    app.get('/viciauth/facebook',passport.authenticate('facebook', {
+    app.get('/viciauth/facebook', passport.authenticate('facebook', {
         scope: ['email']
     }));
 
@@ -86,8 +75,8 @@ function initRoutes(app,ViciAuthSDK) {
     }));    
     
     /* POST REQUESTS */
-    app.post('/viciauth/login',localLoginHandler);
-    app.post('/viciauth/signup',localSignupHandler);
+    app.post('/viciauth/login', localLoginHandler);
+    app.post('/viciauth/signup', localSignupHandler);
     
     app.post('/viciauth/api/login',(req,res)=>{
         var email = req.body.email;
@@ -106,7 +95,7 @@ function initRoutes(app,ViciAuthSDK) {
         var email = req.body.email;
         var password = req.body.password;
         
-        ViciAuthSDK.localSignup(email,password,(err,rUser) => {
+        ViciAuthSDK.localSignup(email, password, (err,rUser) => {
           if(err){
             console.log("[ViciAuth] LocalSignup Error",err);
             return res.status(400).send(err);
@@ -115,13 +104,21 @@ function initRoutes(app,ViciAuthSDK) {
         });
     });
     
+    app.get('/viciauth/logout', logout);
+
+    function logout (req, res) {
+        var returnTo = req.query.returnTo || '/';
+        req.logout();
+        delete req.session;
+        res.redirect(returnTo);
+    }
+
     /**
             (Session) Sets up POST path to which users can submit forms to login
             @bodyparam email {string}
             @bodyparam password {string}
     */    
-    function localSignupHandler(req,res){
-
+    function localSignupHandler (req, res) {
         var email = req.body.email;
         var password = req.body.password;
 
@@ -144,17 +141,14 @@ function initRoutes(app,ViciAuthSDK) {
          });
         });
     }
-
-    
-
-    
+ 
     /**
             (Session) Implements Password local Authentification strategy
             @param email {string}
             @param password {string}
             @param callback {done}
     */
-    function localLoginHandler(req,res){
+    function localLoginHandler (req, res) {
 
         var email = req.body.email;
         var password = req.body.password;
@@ -189,8 +183,7 @@ function initRoutes(app,ViciAuthSDK) {
             @TODO
             Facebook Emails should be appended to ViciAuth profile
     */  
-    function fbAuthHandler(req,token,refreshToken,profile,done){
-
+    function fbAuthHandler(req, token, refreshToken, profile, done) {
                 var Profile = new ViciAuthSDK.Models.User();
                 console.log(profile);         
 
@@ -199,8 +192,7 @@ function initRoutes(app,ViciAuthSDK) {
                     profile={};
                 }
 
-
-                 Profile.setFbId(profile.id);
+                Profile.setFbId(profile.id);
 
                 // add properties for user
                 if (profile.id)
@@ -223,14 +215,12 @@ function initRoutes(app,ViciAuthSDK) {
                     done("No token returned");
                 }
 
-
-                 ViciAuthSDK.connectToFacebook(token,refreshToken,Profile,(err,rUser)=>{
-                     console.log("[ViciAuth] [INFO] responded",err,rUser);
-                     if(err){
-                         return done(JSON.stringify(err));
-                     }
-                     return done(err,{ userId : rUser.userId, token : rUser.token });
-                 });        
-    }    
-       
+                ViciAuthSDK.connectToFacebook(token,refreshToken,Profile,(err,rUser)=>{
+                    console.log("[ViciAuth] [INFO] responded",err,rUser);
+                    if(err){
+                        return done(JSON.stringify(err));
+                    }
+                    return done(err,{ userId : rUser.userId, token : rUser.token });
+                });        
+    }
 }
