@@ -109,9 +109,9 @@ function initRoutes(app, ViciAuthSDK) {
     function logout (req, res) {
         var returnTo = req.query.returnTo || '/';
         req.user = undefined;
-        req.logout();
-        delete req.session;
-        res.redirect(returnTo);
+        req.session.destroy(function (err) {
+            res.redirect(returnTo);
+        });
     }
 
     /**
