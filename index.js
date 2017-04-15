@@ -1,14 +1,8 @@
 /*
-    ViciAuthSDK - Authentification libary for NodeJS for viciauth.com
+    ViciAuthSDK - Authentification libary for NodeJS for https://github.com/adrianbarwicki/vq-auth
     @version 1.0
     @desc Client Authentification Module to Communicate with ViciAuthAPI.
     @author Adrian Barwicki
-
-    @copyright
-    ViciQloud UG (haftungsbeschränkt)
-    Robert-Bosch-Strasse 49
-    69190 Walldorf
-    adrian.barwicki@viciqloud.com
 */
 
 var request = require("request");
@@ -72,7 +66,7 @@ var ViciAuthSDK = function(apiKey,appKey){
       User : UserModel
     };
 
-    this.FbConfig=new FbConfigModel;
+    this.FbConfig = new FbConfigModel;
 
     this.addToProfileFields = function(profileField){
         this.profileFields.push(profileField);
@@ -83,12 +77,14 @@ var ViciAuthSDK = function(apiKey,appKey){
     this.setMandrillKey = function(key) {
        MANDRILL_KEY = key;
     };
+
     this.setWelcomeEmail = function (html, subject, fromEmail) {
        WELCOME_EMAIL.init = true;
        WELCOME_EMAIL.html = html;
        WELCOME_EMAIL.subject = subject;
        WELCOME_EMAIL.fromEmail = fromEmail;
     };
+
     this.checkToken = checkToken;
     this.connectToFacebook = connectToFacebook;
     this.localSignup = localSignup; 
@@ -165,7 +161,6 @@ var ViciAuthSDK = function(apiKey,appKey){
         ViciAuthSDK.httpClient("/auth/local/login",postBody,callback);   
     }
 
-
     ViciAuthSDK.httpClient = httpClient
         
     /**
@@ -200,7 +195,6 @@ var ViciAuthSDK = function(apiKey,appKey){
          requestOptions.headers['x-auth-viciauth-token'] = params.token
          requestOptions.form = params; //{ token : params.token };
         
- 
         
         console.log("[ViciAuth] Request options",requestOptions);
         request.post(requestOptions, (err, response, body) => {
