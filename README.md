@@ -29,14 +29,14 @@ ViciAuth.configureRoutes(expressApp);
 
 In detail:
 
-**Local authentification**
+**Local authentification**<br />
 GET /viciauth/login : Local Login<br />
 GET /viciauth/signup : Local Signup<br />
 GET /viciauth/reset-pw : Restart password<br />
 POST /viciauth/login : Token based login<br />
 POST /viciauth/signup : Token based signup<br />
 
-**Facebook authentification**
+**Facebook authentification**<br />
 GET '/viciauth/facebook' : Facebook authentification
 GET /viciauth/facebook/callback : URL for Facebook callback
 
