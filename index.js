@@ -26,7 +26,7 @@ module.exports = initSDK;
 
 function initSDK(ConfigKeys, expressApp, passport, _opts) {
   OPTS.host = _opts.host || OPTS.host;
-  OPTS.host = _opts.port || OPTS.port;
+  OPTS.port = _opts.port || OPTS.port;
 
   ConfigKeys = ConfigKeys || {};
     
