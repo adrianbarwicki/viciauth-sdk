@@ -24,7 +24,8 @@ var OPTS = {
 
 module.exports = initSDK;
 
-function initSDK(ConfigKeys,expressApp,passport) {
+function initSDK(ConfigKeys, expressApp, passport, _otherHost) {
+  OPTS.host = _otherHost || OPTS.host;
 
   ConfigKeys = ConfigKeys || {};
     
@@ -42,7 +43,7 @@ function initSDK(ConfigKeys,expressApp,passport) {
   var ViciAuth = (new ViciAuthSDK(API_KEY,APP_KEY));
   
   if (expressApp && passport) {
-      ViciAuth.configureRoutes(expressApp,passport);  
+      ViciAuth.configureRoutes(expressApp, passport);  
   }
 
   return ViciAuth;
@@ -97,7 +98,7 @@ var ViciAuthSDK = function(apiKey,appKey){
         @logs information of configured routes
     */
     function configureRoutes(app){
-      require("./routes")(app,this);  
+      require("./routes")(app, this);  
     }
 
     /**
