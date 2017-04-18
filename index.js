@@ -24,20 +24,21 @@ var OPTS = {
 
 module.exports = initSDK;
 
-function initSDK(ConfigKeys, expressApp, passport, _opts) {
+function initSDK (ConfigKeys, expressApp, passport, _opts) {
   OPTS.host = _opts.host || OPTS.host;
   OPTS.port = _opts.port || OPTS.port;
 
   ConfigKeys = ConfigKeys || {};
     
-  if(!ConfigKeys.appKey||!ConfigKeys.apiKey){
+  if (!ConfigKeys.appKey || !ConfigKeys.apiKey) {
     throw "[ViciAuthSDK] AppKey or ApiKey not specified";
   }
 
   //var API_URL = OPTS.protoc;    
   var API_KEY = ConfigKeys ? ConfigKeys.apiKey : null;
   var APP_KEY = ConfigKeys ? ConfigKeys.appKey : null; 
-  if( !APP_KEY || !API_KEY ){
+
+  if (!APP_KEY || !API_KEY) {
     throw "[ERROR] [ViciQloudSDK] Missing APP KEY or API KEY!"
   }
   
@@ -52,7 +53,7 @@ function initSDK(ConfigKeys, expressApp, passport, _opts) {
 
 var ViciAuthSDK = (function(){
  
-var ViciAuthSDK = function(apiKey,appKey){
+var ViciAuthSDK = (apiKey, appKey) => {
     
     //@private
     //var API_URL = apiUrl;
@@ -108,8 +109,8 @@ var ViciAuthSDK = function(apiKey,appKey){
         @param refreshToken{string} - FB Auth Refresh Token
         @param callback{function}, called with (err,ViciAuthUser)
     */   
-    function checkToken(token,callback){
-        var postBody  = { token : token  };
+    function checkToken (token, callback) {
+        var postBody  = { token: token  };
         ViciAuthSDK.httpClient("/auth/token",postBody,callback);	
     }    
 
@@ -118,9 +119,12 @@ var ViciAuthSDK = function(apiKey,appKey){
         @param token{string} - ViciAuth Auth Token
         @param callback{function}, called with (err)
     */   
-    function destroyToken(token,callback){
-        var postBody  = { token : token  };
-        ViciAuthSDK.httpClient("/auth/destroy-token",postBody,callback);	
+    function destroyToken (token, callback) {
+        var postBody = {
+            token
+        };
+
+        ViciAuthSDK.httpClient("/auth/logout", postBody, callback);	
     }
 
     /**
