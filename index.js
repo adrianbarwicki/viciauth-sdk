@@ -5,11 +5,12 @@
     @author Adrian Barwicki
 */
 
-var request = require("request");
+
 var UserModel = require("./models/user");
 var FbConfigModel = require("./models/fbConfig.js");
 var emailService = require("./services/emailService.js");
 var VERSION = "1.0.0";
+var httpClientFactory = require('./httpClientFactory');
 
 var OPTS = {
     protocol:"http",
@@ -18,7 +19,7 @@ var OPTS = {
     prefix: '/',
     method: 'POST',
     headers: {
-      'User-Agent': 'ViciAuth/Node-v1.0'
+        'User-Agent': 'ViciAuth/Node-v1.0'
     }
 };
 
@@ -42,8 +43,8 @@ function initSDK (ConfigKeys, expressApp, passport, _opts) {
   if (!APP_KEY || !API_KEY) {
     throw "[ERROR] [ViciQloudSDK] Missing APP KEY or API KEY!"
   }
-  
-  var ViciAuth = (new ViciAuthSDK(API_KEY,APP_KEY));
+
+  var ViciAuth = viciAuthSDK(API_KEY, APP_KEY);
   
   if (expressApp && passport) {
       ViciAuth.configureRoutes(expressApp, passport);  
@@ -52,55 +53,48 @@ function initSDK (ConfigKeys, expressApp, passport, _opts) {
   return ViciAuth;
 }
 
-var ViciAuthSDK = (function(){
- 
-var ViciAuthSDK = (apiKey, appKey) => {
-    
-    //@private
-    //var API_URL = apiUrl;
+var viciAuthSDK = (apiKey, appKey) => {
+    // @private
     var API_KEY = apiKey;
     var APP_KEY = appKey;
     var MANDRILL_KEY = '';
-
     var WELCOME_EMAIL = {};
 
-    //@public
-    // Models
-    this.Models={
-      User : UserModel
+    var httpClient = httpClientFactory(apiKey, appKey, OPTS);
+
+    // @public
+    return {
+        Models: {
+            User: UserModel
+        },
+        FbConfig: new FbConfigModel(),
+        configureRoutes,
+        setMandrillKey,
+        setWelcomeEmail,
+        checkToken,
+        connectToFacebook,
+        localSignup,
+        localLogin,
+        destroyToken
     };
 
-    this.FbConfig = new FbConfigModel;
-
-    this.addToProfileFields = function(profileField){
-        this.profileFields.push(profileField);
-    };
-    
-    this.configureRoutes = configureRoutes;
-
-    this.setMandrillKey = function(key) {
+    function setMandrillKey(key) {
        MANDRILL_KEY = key;
-    };
+    }
 
-    this.setWelcomeEmail = function (html, subject, fromEmail) {
+    function setWelcomeEmail(html, subject, fromEmail) {
        WELCOME_EMAIL.init = true;
        WELCOME_EMAIL.html = html;
        WELCOME_EMAIL.subject = subject;
        WELCOME_EMAIL.fromEmail = fromEmail;
-    };
+    }
 
-    this.checkToken = checkToken;
-    this.connectToFacebook = connectToFacebook;
-    this.localSignup = localSignup; 
-    this.localLogin = localLogin;
-    this.destroyToken = destroyToken;
- 
     /**
         Configure local routes (only express apps supported) for Local Auth and Facebook Auth
         @param app{ExpressApp} - ExpressApp
         @logs information of configured routes
     */
-    function configureRoutes(app){
+    function configureRoutes(app) {
       require("./routes")(app, this);  
     }
 
@@ -111,8 +105,11 @@ var ViciAuthSDK = (apiKey, appKey) => {
         @param callback{function}, called with (err,ViciAuthUser)
     */   
     function checkToken (token, callback) {
-        var postBody  = { token: token  };
-        ViciAuthSDK.httpClient("/auth/token",postBody,callback);	
+        var postBody = {
+            token
+         };
+
+        httpClient("/auth/token",postBody,callback);	
     }    
 
     /**
@@ -125,7 +122,7 @@ var ViciAuthSDK = (apiKey, appKey) => {
             token
         };
 
-        ViciAuthSDK.httpClient("/auth/logout", postBody, callback);	
+        httpClient("/auth/logout", postBody, callback);	
     }
 
     /**
@@ -136,10 +133,15 @@ var ViciAuthSDK = (apiKey, appKey) => {
         @param callback{function}, called with (err,ViciAuthUser)
     */
     function connectToFacebook(token,refreshToken,Profile,callback){
-        console.log("[ViciAuth] Connecting to FB",token,refreshToken,Profile);
+        console.log("[ViciAuth] Connecting to FB", token, refreshToken, Profile);
         
-        var postBody  = { token : token, refreshToken : refreshToken, Profile : Profile };
-        ViciAuthSDK.httpClient("/auth/networks/facebook",postBody,callback);
+        var postBody = {
+            token, 
+            refreshToken,
+            Profile 
+        };
+
+        httpClient("/auth/networks/facebook",postBody,callback);
     }
 
     /**
@@ -149,8 +151,12 @@ var ViciAuthSDK = (apiKey, appKey) => {
         @param callback{function}
     */
     function localSignup(email, password, callback){
-        var postBody  = { email: email, password: password };
-        ViciAuthSDK.httpClient("/auth/local/signup",postBody,callback);
+        var postBody = {
+            email,
+            password 
+        };
+
+        httpClient("/auth/local/signup",postBody,callback);
 
         if (WELCOME_EMAIL.init) {
             emailService.sendEmail(MANDRILL_KEY, email, WELCOME_EMAIL.html, WELCOME_EMAIL.subject, WELCOME_EMAIL.fromEmail);
@@ -163,80 +169,12 @@ var ViciAuthSDK = (apiKey, appKey) => {
         @param password{string}
         @param callback{function}
     */
-    function localLogin(email,password,callback){
-        var postBody  = { email : email, password : password };   
-        ViciAuthSDK.httpClient("/auth/local/login",postBody,callback);   
+    function localLogin(email, password, callback) {
+        var postBody  = { 
+            email,
+            password
+        };
+
+        httpClient("/auth/local/login",postBody,callback);   
     }
-
-    ViciAuthSDK.httpClient = httpClient
-        
-    /**
-        HTTP (POST requests) Client for ViciAuth, sends requests with viciauth app key and api key in header
-        @param uri{string} - API paths of ViciAuth.com
-        @param params{Object} - Body of the request
-        @param callback{function}, called with (err,ViciAuthUser)
-    */
-    function httpClient(uri, params, callback) {
-         console.log("[INFO] [ViciAuth] Calling uri %s",uri);
-        
-         params = params || {};
-         if(!callback){
-             throw "[ERROR] call method must be provided with callback function!"
-         }
-        
-         if(!APP_KEY){
-             console.log("[WARNING] [ViciAuth] No app key");
-         }
-        
-         if(!API_KEY){
-             console.log("[WARNING] [ViciAuth] No api key");
-         }
-        
-         var requestOptions = {
-             headers : OPTS.headers || {}
-         };
-        
-         requestOptions.url = OPTS.protocol + "://" + OPTS.host + ":" + OPTS.port + uri;
-         requestOptions.headers['x-auth-viciauth-app-key'] = APP_KEY;
-         requestOptions.headers['x-auth-viciauth-api-key'] = API_KEY;
-         requestOptions.headers['x-auth-viciauth-token'] = params.token
-         requestOptions.form = params; //{ token : params.token };
-        
-        
-        console.log("[ViciAuth] Request options",requestOptions);
-        request.post(requestOptions, (err, response, body) => {
-          if(err){
-            try{
-              err = JSON.parse(err);
-            }catch(e){
-              console.error(err);
-            }
-            return callback({status:502,err:err});
-          }
-
-          if(body){
-            try{
-              body = JSON.parse(body);
-            }catch(err){
-              console.error("[ERROR] ViciAuthSDK : Something went wrong");
-              console.error(err);
-              body = {};
-              return callback(err);
-            }
-          } else {
-             body = {};
-          }
-
-          if (response.statusCode !== 200) {
-            return callback({status:response.statusCode, err : body});
-          }
-
-          return callback(null,body);
-
-        });      
-    }   
-
-}
-
-return ViciAuthSDK;  
-}());
+};
