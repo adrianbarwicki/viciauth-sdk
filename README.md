@@ -35,6 +35,7 @@ GET /viciauth/signup : Local Signup<br />
 GET /viciauth/reset-pw : Restart password<br />
 POST /viciauth/login : Token based login<br />
 POST /viciauth/signup : Token based signup<br />
+POST /viciauth/change-password : Change user password<br />
 
 **Facebook authentification**<br />
 GET '/viciauth/facebook' : Facebook authentification
@@ -47,6 +48,7 @@ ViciAuthSDK comes with the following public methods:
 ViciAuthSDK#destroyToken<br />
 ViciAuthSDK#checkToken<br />
 ViciAuthSDK#localSignup<br />
+ViciAuthSDK#changePassword<br />
 ViciAuthSDK#localLogin<br />
 ViciAuthSDK#connectToFacebook<br />
 Example:
