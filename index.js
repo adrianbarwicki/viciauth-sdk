@@ -5,7 +5,6 @@
     @author Adrian Barwicki
 */
 
-
 var UserModel = require("./models/user");
 var FbConfigModel = require("./models/fbConfig.js");
 var emailService = require("./services/emailService.js");
@@ -69,6 +68,7 @@ var viciAuthSDK = (apiKey, appKey) => {
         },
         FbConfig: new FbConfigModel(),
         configureRoutes,
+        changePassword,
         setMandrillKey,
         setWelcomeEmail,
         checkToken,
@@ -99,6 +99,19 @@ var viciAuthSDK = (apiKey, appKey) => {
     }
 
     /**
+        Changes user's password
+    */   
+    function changePassword (token, currentPassword, newPassword, callback) {
+        var postBody = {
+            token,
+            currentPassword,
+            newPassword
+         };
+
+        httpClient("/auth/password", postBody, callback);	
+    } 
+
+    /**
         Verifies ViciAuth token and returns Users associated to this token
         @param token{string} - ViciAuth Auth Token
         @param refreshToken{string} - FB Auth Refresh Token
@@ -109,7 +122,7 @@ var viciAuthSDK = (apiKey, appKey) => {
             token
          };
 
-        httpClient("/auth/token",postBody,callback);	
+        httpClient("/auth/token", postBody, callback);	
     }    
 
     /**

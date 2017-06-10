@@ -33,7 +33,8 @@ const httpClientFactory = (API_KEY, APP_KEY, OPTS) => (uri, params, callback) =>
     requestOptions.headers['x-auth-viciauth-token'] = params.token
     requestOptions.form = params; //{ token : params.token };
 
-    request.post(requestOptions, (err, response, body) => {
+    request
+    .post(requestOptions, (err, response, body) => {
         if (err) {
             try {
                 err = JSON.parse(err);
@@ -51,7 +52,7 @@ const httpClientFactory = (API_KEY, APP_KEY, OPTS) => (uri, params, callback) =>
                 console.error(err);
                 body = {};
 
-                return callback(err);
+                return callback({ err: body });
             }
         } else {
             body = {};
