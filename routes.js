@@ -66,7 +66,7 @@ function initRoutes(app, ViciAuthSDK) {
     });
     
     app.get('/viciauth/facebook', passport.authenticate('facebook', {
-        scope: ['email']
+        scope: [ 'email' ]
     }));
 
     app.get('/viciauth/facebook/callback', passport.authenticate('facebook', {

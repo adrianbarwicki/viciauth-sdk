@@ -59,7 +59,14 @@ var viciAuthSDK = (apiKey, appKey) => {
     var MANDRILL_KEY = '';
     var WELCOME_EMAIL = {};
 
-    var httpClient = httpClientFactory(apiKey, appKey, OPTS);
+    
+
+    const getOPTS = JSON.parse(JSON.stringify(OPTS));
+
+    getOPTS.method = 'get';
+
+    const httpClient = httpClientFactory(apiKey, appKey, OPTS);
+    const httpClientGET = httpClientFactory(apiKey, appKey, getOPTS);
 
     // @public
     return {
@@ -155,6 +162,10 @@ var viciAuthSDK = (apiKey, appKey) => {
         };
 
         httpClient("/auth/networks/facebook",postBody,callback);
+    }
+
+    function getAuthUserIdFromEmail(email, callback) {
+        httpClientGET(`/auth/user?email=${email}`, false, callback);
     }
 
     /**

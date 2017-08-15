@@ -31,17 +31,23 @@ const httpClientFactory = (API_KEY, APP_KEY, OPTS) => (uri, params, callback) =>
     requestOptions.headers['x-auth-viciauth-app-key'] = APP_KEY;
     requestOptions.headers['x-auth-viciauth-api-key'] = API_KEY;
     requestOptions.headers['x-auth-viciauth-token'] = params.token
-    requestOptions.form = params; //{ token : params.token };
+
+    if (OPTS.method !== 'get') {
+        requestOptions.form = params; //{ token : params.token };
+    }
 
     request
-    .post(requestOptions, (err, response, body) => {
+    [OPTS.method || 'post'](requestOptions, (err, response, body) => {
         if (err) {
             try {
                 err = JSON.parse(err);
             } catch(e) {
                 console.error(err);
             }
-            return callback({status:502,err:err});
+            return callback({
+                status:502,
+                err:err
+            });
         }
 
         if (body) {
@@ -50,7 +56,6 @@ const httpClientFactory = (API_KEY, APP_KEY, OPTS) => (uri, params, callback) =>
             } catch(err) {
                 console.error("[ERROR] ViciAuthSDK : Something went wrong");
                 console.error(err);
-                body = {};
 
                 return callback({ err: body });
             }
