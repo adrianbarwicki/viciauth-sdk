@@ -63,7 +63,7 @@ var viciAuthSDK = (apiKey, appKey) => {
 
     const getOPTS = JSON.parse(JSON.stringify(OPTS));
 
-    getOPTS.method = 'get';
+    getOPTS.method = 'GET';
 
     const httpClient = httpClientFactory(apiKey, appKey, OPTS);
     const httpClientGET = httpClientFactory(apiKey, appKey, getOPTS);

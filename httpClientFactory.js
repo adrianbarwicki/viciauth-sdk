@@ -32,12 +32,13 @@ const httpClientFactory = (API_KEY, APP_KEY, OPTS) => (uri, params, callback) =>
     requestOptions.headers['x-auth-viciauth-api-key'] = API_KEY;
     requestOptions.headers['x-auth-viciauth-token'] = params.token
 
-    if (OPTS.method !== 'get') {
+    const method = OPTS.method.toLowerCase();
+
+    if (method !== 'get') {
         requestOptions.form = params; //{ token : params.token };
     }
 
-    request
-    [OPTS.method || 'post'](requestOptions, (err, response, body) => {
+    request[method](requestOptions, (err, response, body) => {
         if (err) {
             try {
                 err = JSON.parse(err);
