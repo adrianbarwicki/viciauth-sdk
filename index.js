@@ -80,6 +80,7 @@ var viciAuthSDK = (apiKey, appKey) => {
         setWelcomeEmail,
         checkToken,
         connectToFacebook,
+        getEmailsFromUserId,
         getAuthUserIdFromEmail,
         localSignup,
         localLogin,
@@ -167,6 +168,10 @@ var viciAuthSDK = (apiKey, appKey) => {
 
     function getAuthUserIdFromEmail(email, callback) {
         httpClientGET(`/auth/user?email=${email}`, false, callback);
+    }
+
+    function getEmailsFromUserId(userId, callback) {
+        httpClientGET(`/auth/user?userId=${userId}`, false, callback);
     }
 
     /**
