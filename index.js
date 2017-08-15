@@ -80,6 +80,7 @@ var viciAuthSDK = (apiKey, appKey) => {
         setWelcomeEmail,
         checkToken,
         connectToFacebook,
+        getAuthUserIdFromEmail,
         localSignup,
         localLogin,
         destroyToken
