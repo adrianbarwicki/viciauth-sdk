@@ -48,9 +48,12 @@ ViciAuthSDK comes with the following public methods:
 ViciAuthSDK#destroyToken<br />
 ViciAuthSDK#checkToken<br />
 ViciAuthSDK#localSignup<br />
+ViciAuthSDK#connectToFacebook<br />
+ViciAuthSDK#resetPassword<br />
+ViciAuthSDK#requestPasswordReset<br />
 ViciAuthSDK#changePassword<br />
 ViciAuthSDK#localLogin<br />
-ViciAuthSDK#connectToFacebook<br />
+
 Example:
 ```
             var Profile = new ViciAuthSDK.Models.User();

@@ -84,7 +84,9 @@ var viciAuthSDK = (apiKey, appKey) => {
         getAuthUserIdFromEmail,
         localSignup,
         localLogin,
-        destroyToken
+        destroyToken,
+        requestPasswordReset,
+        resetPassword
     };
 
     function setMandrillKey(key) {
@@ -115,10 +117,41 @@ var viciAuthSDK = (apiKey, appKey) => {
             token,
             currentPassword,
             newPassword
-         };
+        };
 
         httpClient("/auth/password", postBody, callback);	
     } 
+
+    
+
+    /**
+        Request a code for a new password
+        @param email{string} - ViciAuth Auth Token
+        @param callback{function}, called with (err, ViciAuthResetCode)
+    */   
+    function requestPasswordReset (email, callback) {
+        var postBody = {
+            email
+        };
+
+        httpClient("/auth/password/request-reset", postBody, callback);	
+    }
+
+    /**
+        Request a code for a new password
+        @param email{string} - ViciAuth Auth Token
+        @param callback{function}, called with (err, ViciAuthResetCode)
+    */   
+    function resetPassword (code, password, callback) {
+        var postBody = {
+            code,
+            password
+        };
+
+        httpClient("/auth/password/reset", postBody, callback);	
+    }
+
+    
 
     /**
         Verifies ViciAuth token and returns Users associated to this token
@@ -186,7 +219,7 @@ var viciAuthSDK = (apiKey, appKey) => {
             password 
         };
 
-        httpClient("/auth/local/signup",postBody,callback);
+        httpClient("/auth/local/signup", postBody, callback);
 
         if (WELCOME_EMAIL.init) {
             emailService.sendEmail(MANDRILL_KEY, email, WELCOME_EMAIL.html, WELCOME_EMAIL.subject, WELCOME_EMAIL.fromEmail);
